@@ -9,7 +9,7 @@
 # 설치
 
 서브버전 서버를 구동하려면 서브버전 명령행 바이너리를 내려받아야 합니다.
-아래 주소에서 Subversion 1.9.4(혹은 그 이상)를 선택하고 설치합니다.
+아래 주소에서 Subversion을 선택하고 설치합니다.
 
 http://www.collab.net/downloads/subversion
 
