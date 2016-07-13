@@ -17,7 +17,9 @@ http://www.collab.net/downloads/subversion
 
 콘솔 창을 열어서 아래 명령을 내립니다.
 
+```
 svnserve
+```
 
 정상 설치를 했다면 다음과 같은 메시지가 뜹니다.
 
@@ -34,7 +36,9 @@ svnserve
 
 콘솔 창에서 아래와 같이 명령을 내립니다.
 
+```
 svnserve -d -r 저장소-루트-디렉터리
+```
 
 2016년 7월 8일 기준으로 저장소 루트 디렉터리는 E:\KoviProjectSystem\SvnRepo 입니다.
 
