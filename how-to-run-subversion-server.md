@@ -46,6 +46,18 @@ TortoiseSVN과 같은 도구를 써서 서브버전 서버가 정상 동작하�
 위 명령으로 서브버전 서버를 구동할 수 있습니다.
 하지만 PC를 켤 때마다 콘솔 창에서 명령을 내려야 하는 단점이 있습니다.
 이 문제를 해결하려면 svnserve를 서비스로 구동해야 합니다.
-svnserve를 서비스로 구동하는 방법은 아래 문서를 참고하세요.
 
-http://svnbook.red-bean.com/en/1.7/svn.serverconfig.svnserve.html#svn.serverconfig.svnserve.invoking.winservice
+콘솔 창을 열어서 아래 명령을 내립니다.
+
+```
+sc create svn
+    binpath= "C:\Program Files\CollabNet\Subversion Client\svnserve.exe --service -r C:\repos"
+    displayname= "Subversion Server"
+    depend= Tcpip
+    start= auto
+```
+
+svnserver.exe 경로는 환경에 따라 다를 수 있습니다.
+
+제어판 > 관리도구 > 서비스를 선택합니다.
+목록에 Subversion Server가 있다면 서비스가 제대로 설치된 것입니다.
