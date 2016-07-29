@@ -6,6 +6,9 @@ param (
 	[ValidateNotNullorEmpty()]
 	[string]$RepositoryName,
 
+	[ValidateNotNullorEmpty()]
+	[string]$Skeleton,
+
 	[switch]$Empty = $false
 )
 
@@ -17,7 +20,9 @@ if (Test-Path $RepositoryPath) {
 
 # Initialize the repository
 svnadmin create --pre-1.5-compatible $RepositoryPath >$null
-robocopy /IS /E repository-skeleton $RepositoryPath >$null
+if ($Skeleton -ne '') {
+	robocopy /IS /E $Skeleton $RepositoryPath >$null
+}
 
 if (!$Empty.IsPresent) {
 	# Construct the standard directory structure and commit.
