@@ -56,7 +56,7 @@
 - IndoorNavigation_LH
 - iPhone
 - Irrlicht
-- ISCProject
+- ISCProject: 생산기술연구원의 Z-Cast와 동일한 기능을 갖는 인터넷 기반의 가상 주조해석 솔루션
 - ISOCAD
 - JapanSupport
 - KCC
