@@ -71,8 +71,7 @@
 - KOVIBuiltIn3
 - KoviDecori
 - KOVIetc
-- KOVIHouse
-- KOVIHouse_Mobile
+- KOVIHouse_Mobile : 안드로이드에서 동작하는 커뮤니티 앱
 - KOVIKitchen
 - KOVIKitchen2
 - KOVIKitchen2009
@@ -81,8 +80,7 @@
 - KoviTiker
 - koviTokva
 - KOVIViewer
-- koviWebViewer
-- Kovi_Hombuilder
+- Kovi_Hombuilder: www.kovihouse.com 에서 서비스하는 유니티 웹 어플리케이션
 - KT_Celltrek
 - KT_CellTREK_Commander
 - KussHand
@@ -115,7 +113,7 @@
 - phungWebViewer
 - ProjectSytemManual
 - propertyService
-- RnA
+- RnA-1.4compatible: 수자원공사 안전관리 시스템
 - S-ONE
 - SamsungBuiltIn
 - SamsungMobile
@@ -127,7 +125,7 @@
 - SelfExtractor
 - SeoulHospital
 - ShinhanDMR
-- SIT
+- SIT-1.4compatible: SIT가 발주한 삼성 공장 장비 관리 시스템
 - SiteKey
 - Sungchang
 - Syrasony
