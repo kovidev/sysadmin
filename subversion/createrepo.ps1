@@ -7,7 +7,7 @@ param (
 	[string]$RepositoryName,
 
 	[ValidateNotNullorEmpty()]
-	[string]$Skeleton,
+	[string]$Skeleton = "E:\KoviProjectSystem\subversion\repository-skeleton",
 
 	[switch]$Empty = $false
 )
