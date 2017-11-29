@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+# subversion mirror repository initializer
+
+if [ -z "$1" ]; then
+    >&2 printf "usage: %s REPOSITORY\n" $(basename $0)
+    exit 1
+fi
+
+REPO=$1
+HOOKS="/etc/svn-mirror/hooks"
+DIR=$(dirname $(realpath -s ${BASH_SOURCE}))
+MIRROR="file://$PWD/$REPO"
+SOURCE="svn://dev.kovi.com/$REPO"
+
+cleanup() {
+    if [ -e "$REPO" ]; then
+        read -p "$REPO already exists. Delete it? (y/n) " -n 1
+        echo ""
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            rm -rf "$REPO"
+        else
+            exit 1
+        fi
+    fi
+}
+
+# Check that $SOURCE is there first
+svn ls $SOURCE >/dev/null &&
+    cleanup &&
+    svnadmin create $REPO &&
+    cp -R $HOOKS $REPO &&
+    svnsync init $MIRROR $SOURCE
