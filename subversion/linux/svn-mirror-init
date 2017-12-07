@@ -7,6 +7,7 @@ set -e
 
 progname=$(basename $0)
 hooks="/etc/svn-mirror/hooks"
+root=$PWD
 
 usage() {
     echo "Usage: $progname REPOSITORY"
@@ -19,17 +20,19 @@ help() {
     echo ""
     echo "Options:"
     echo "  -h, --help          display this help and exit"
+    echo "  -r, --root          root directory to create a mirror"
     echo "  --hooks             hooks directory (default $hooks)"
 }
 
 # parse options
 # CAUTION: do not inline $args variable
 # otherwise, program keeps going even `getopt` has been failed.
-args=$(getopt -o h --long help,hooks: -n $progname -- $@)
+args=$(getopt -o hr: --long help,hooks:,root: -n $progname -- $@)
 eval set -- $args
 while true; do
     case "$1" in
         -h|--help) shift; help; exit 0;;
+        -r|--root) root=$(realpath "$2"); shift 2;;
         --hooks) hooks="$2"; shift 2;;
         --) shift; break;;
     esac
@@ -41,15 +44,15 @@ if [ -z "$1" ]; then
 fi
 
 repo=$1
-mirror="file://$PWD/$repo"
+mirror="file://$root/$repo"
 source="svn://dev.kovi.com/$repo"
 
 cleanup() {
-    if [ -e "$repo" ]; then
+    if [ -e "$root/$repo" ]; then
         read -p "$repo already exists. Delete it? (y/n) " -n 1
         echo ""
         if [[ $REPLY =~ ^[Yy]$ ]]; then
-            rm -rf "$repo"
+            rm -rf "$root/$repo"
         else
             exit 1
         fi
@@ -59,6 +62,6 @@ cleanup() {
 # Check that $source is there first
 svn ls $source >/dev/null &&
     cleanup &&
-    svnadmin create $repo &&
-    cp -R $hooks $repo &&
+    svnadmin create "$root/$repo" &&
+    cp -R $hooks "$root/$repo" &&
     svnsync init $mirror $source
