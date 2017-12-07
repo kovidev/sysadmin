@@ -1,9 +1,36 @@
 #!/usr/bin/env bash
 
-# subversion mirror repository initializer
+# subversion mirror initializer
+
+# exit immediately if any error occurs
+set -e
+
+progname=$(basename $0)
+
+usage() {
+    echo "Usage: $progname REPOSITORY"
+}
+
+help() {
+    echo "Subversion mirror initializer"
+    echo ""
+    usage
+    echo ""
+    echo "Options:"
+    echo "  -h, --help          display this help and exit"
+}
+
+# parse options
+eval set -- $(getopt -o h --long help -n $progname -- $@)
+while true; do
+    case "$1" in
+        -h|--help) shift; help; exit 0;;
+        --) shift; break;;
+    esac
+done
 
 if [ -z "$1" ]; then
-    >&2 printf "usage: %s REPOSITORY\n" $(basename $0)
+    usage >&2
     exit 1
 fi
 
