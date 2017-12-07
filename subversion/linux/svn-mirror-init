@@ -34,27 +34,27 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-REPO=$1
-HOOKS="/etc/svn-mirror/hooks"
-DIR=$(dirname $(realpath -s ${BASH_SOURCE}))
-MIRROR="file://$PWD/$REPO"
-SOURCE="svn://dev.kovi.com/$REPO"
+repo=$1
+hooks="/etc/svn-mirror/hooks"
+dir=$(dirname $(realpath -s ${BASH_SOURCE}))
+mirror="file://$PWD/$repo"
+source="svn://dev.kovi.com/$repo"
 
 cleanup() {
-    if [ -e "$REPO" ]; then
-        read -p "$REPO already exists. Delete it? (y/n) " -n 1
+    if [ -e "$repo" ]; then
+        read -p "$repo already exists. Delete it? (y/n) " -n 1
         echo ""
         if [[ $REPLY =~ ^[Yy]$ ]]; then
-            rm -rf "$REPO"
+            rm -rf "$repo"
         else
             exit 1
         fi
     fi
 }
 
-# Check that $SOURCE is there first
-svn ls $SOURCE >/dev/null &&
+# Check that $source is there first
+svn ls $source >/dev/null &&
     cleanup &&
-    svnadmin create $REPO &&
-    cp -R $HOOKS $REPO &&
-    svnsync init $MIRROR $SOURCE
+    svnadmin create $repo &&
+    cp -R $hooks $repo &&
+    svnsync init $mirror $source
