@@ -6,6 +6,7 @@
 set -e
 
 progname=$(basename $0)
+hooks="/etc/svn-mirror/hooks"
 
 usage() {
     echo "Usage: $progname REPOSITORY"
@@ -18,13 +19,15 @@ help() {
     echo ""
     echo "Options:"
     echo "  -h, --help          display this help and exit"
+    echo "  --hooks             hooks directory (default $hooks)"
 }
 
 # parse options
-eval set -- $(getopt -o h --long help -n $progname -- $@)
+eval set -- $(getopt -o h --long help,hooks: -n $progname -- $@)
 while true; do
     case "$1" in
         -h|--help) shift; help; exit 0;;
+        --hooks) hooks="$2"; shift 2;;
         --) shift; break;;
     esac
 done
@@ -35,7 +38,6 @@ if [ -z "$1" ]; then
 fi
 
 repo=$1
-hooks="/etc/svn-mirror/hooks"
 dir=$(dirname $(realpath -s ${BASH_SOURCE}))
 mirror="file://$PWD/$repo"
 source="svn://dev.kovi.com/$repo"
