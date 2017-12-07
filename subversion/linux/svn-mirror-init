@@ -41,7 +41,6 @@ if [ -z "$1" ]; then
 fi
 
 repo=$1
-dir=$(dirname $(realpath -s ${BASH_SOURCE}))
 mirror="file://$PWD/$repo"
 source="svn://dev.kovi.com/$repo"
 
