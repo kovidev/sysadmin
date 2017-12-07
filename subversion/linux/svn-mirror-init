@@ -23,7 +23,10 @@ help() {
 }
 
 # parse options
-eval set -- $(getopt -o h --long help,hooks: -n $progname -- $@)
+# CAUTION: do not inline $args variable
+# otherwise, program keeps going even `getopt` has been failed.
+args=$(getopt -o h --long help,hooks: -n $progname -- $@)
+eval set -- $args
 while true; do
     case "$1" in
         -h|--help) shift; help; exit 0;;
