@@ -8,6 +8,7 @@ set -e
 progname=$(basename $0)
 hooks="/etc/svn-mirror/hooks"
 root="./"
+force=0
 
 usage() {
     echo "Usage: $progname [OPTION]... REPOSITORY..."
@@ -25,18 +26,20 @@ help() {
     echo "Options:"
     echo "  -h, --help          display this help and exit"
     echo "  -r, --root          root directory to create a mirror"
+    echo "  -r, --force         never prompt"
     echo "  --hooks             hooks directory (default $hooks)"
 }
 
 # parse options
 # CAUTION: do not inline $args variable
 # otherwise, program keeps going even `getopt` has been failed.
-args=$(getopt -o hr: --long help,hooks:,root: -n $progname -- $@)
+args=$(getopt -o hfr: --long help,force,hooks:,root: -n $progname -- $@)
 eval set -- $args
 while true; do
     case "$1" in
         -h|--help) shift; help; exit 0;;
         -r|--root) root="$2"; shift 2;;
+        -f|--force) force=1; shift;;
         --hooks) hooks="$2"; shift 2;;
         --) shift; break;;
     esac
@@ -48,7 +51,9 @@ if [ -z "$*" ]; then
 fi
 
 cleanup() {
-    if [ -e "$1" ]; then
+    if [ "$force" -eq 1 ]; then
+        rm -rf "$1"
+    elif [ -e "$1" ]; then
         read -p "$1 already exists. Delete it? (y/n) " -n 1
         echo ""
         if [[ $REPLY =~ ^[Yy]$ ]]; then
