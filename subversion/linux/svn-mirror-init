@@ -7,10 +7,14 @@ set -e
 
 progname=$(basename $0)
 hooks="/etc/svn-mirror/hooks"
-root="."
+root="./"
 
 usage() {
     echo "Usage: $progname [OPTION]... REPOSITORY..."
+}
+
+canonicalPath() {
+    echo $1 | sed s#//*#/#g
 }
 
 help() {
@@ -58,12 +62,13 @@ cleanup() {
 for repo in $@; do
     mirror="file://$(realpath $root)/$repo"
     source="svn://dev.kovi.com/$repo"
+    repoDir=$(canonicalPath "$root/$repo")
 
     echo "Trying to initialize $repo"
     # Check that $source is there first
     svn ls $source >/dev/null &&
-        cleanup "$root/$repo" &&
-        svnadmin create "$root/$repo" &&
-        cp -R $hooks "$root/$repo" &&
+        cleanup "$repoDir" &&
+        svnadmin create "$repoDir" &&
+        cp -R $hooks "$repoDir" &&
         svnsync init $mirror $source
 done
