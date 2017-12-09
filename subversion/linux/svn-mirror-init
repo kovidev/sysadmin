@@ -10,7 +10,7 @@ hooks="/etc/svn-mirror/hooks"
 root=$PWD
 
 usage() {
-    echo "Usage: $progname [OPTION]... REPOSITORY"
+    echo "Usage: $progname [OPTION]... REPOSITORY..."
 }
 
 help() {
@@ -38,30 +38,32 @@ while true; do
     esac
 done
 
-if [ -z "$1" ]; then
+if [ -z "$*" ]; then
     usage >&2
     exit 1
 fi
 
-repo=$1
-mirror="file://$root/$repo"
-source="svn://dev.kovi.com/$repo"
-
 cleanup() {
-    if [ -e "$root/$repo" ]; then
-        read -p "$repo already exists. Delete it? (y/n) " -n 1
+    if [ -e "$1" ]; then
+        read -p "$1 already exists. Delete it? (y/n) " -n 1
         echo ""
         if [[ $REPLY =~ ^[Yy]$ ]]; then
-            rm -rf "$root/$repo"
+            rm -rf "$1"
         else
             exit 1
         fi
     fi
 }
 
-# Check that $source is there first
-svn ls $source >/dev/null &&
-    cleanup &&
-    svnadmin create "$root/$repo" &&
-    cp -R $hooks "$root/$repo" &&
-    svnsync init $mirror $source
+for repo in $@; do
+    mirror="file://$root/$repo"
+    source="svn://dev.kovi.com/$repo"
+
+    echo "Trying to initialize $repo"
+    # Check that $source is there first
+    svn ls $source >/dev/null &&
+        cleanup "$root/$repo" &&
+        svnadmin create "$root/$repo" &&
+        cp -R $hooks "$root/$repo" &&
+        svnsync init $mirror $source
+done
