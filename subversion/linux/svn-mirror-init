@@ -10,7 +10,7 @@ hooks="/etc/svn-mirror/hooks"
 root=$PWD
 
 usage() {
-    echo "Usage: $progname REPOSITORY"
+    echo "Usage: $progname [OPTION]... REPOSITORY"
 }
 
 help() {
