@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+progname=$(basename $0)
+
+usage() {
+    echo "Usage: $progname [OPTION]... ROOT"
+}
+
+help() {
+    echo "Subversion mirror synchronizer"
+    echo ""
+    usage
+    echo ""
+    echo "Options:"
+    echo "  -h, --help          display this help and exit"
+}
+
+pattern=".*|_*"
+args=$(getopt -o h --long help -n$progname -- $@)
+[ $? -eq 0 ] || exit 0
+
+eval set -- $args
+while true; do
+    case "$1" in
+        -h|--help) shift; help; exit 0;;
+        --) shift; break;;
+    esac
+done
+
+root=$1
+
+if [ -z "$root" ]; then
+    usage >&2
+    exit 1
+fi
+
+
+if ! [ -d "$root" ]; then
+    echo "no such directory: $root" >&2
+    exit 1
+fi
+
+repositories=$(find "$root" -mindepth 1 -maxdepth 1 -type d -not \( -name ".*" -o -name "_*" \) )
+for repo in $repositories; do
+    echo "Synchronizing $repo"
+    svnsync sync "file://$(realpath $repo)"
+done
