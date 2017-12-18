@@ -10,6 +10,8 @@ hooks="/etc/svn-mirror/hooks"
 conf="/etc/svn-mirror/conf"
 root="./"
 force=0
+svn_option="--non-interactive"
+svnsync_option="--non-interactive"
 
 usage() {
     echo "Usage: $progname [OPTION]... REPOSITORY..."
@@ -30,12 +32,14 @@ help() {
     echo "  -r, --force         never prompt"
     echo "  --hooks             hooks directory (default $hooks)"
     echo "  --conf              conf directory (default $conf)"
+    echo "  --username          connect to the source repository with username ARG"
+    echo "  --password          connect to the source repository with password ARG"
 }
 
 # parse options
 # CAUTION: do not inline $args variable
 # otherwise, program keeps going even `getopt` has been failed.
-args=$(getopt -o hfr: --long help,force,hooks:,root:,conf: -n $progname -- $@)
+args=$(getopt -o hfr: --long help,force,hooks:,root:,conf:,username:,password: -n $progname -- $@)
 eval set -- $args
 while true; do
     case "$1" in
@@ -44,6 +48,14 @@ while true; do
         -f|--force) force=1; shift;;
         --hooks) hooks="$2"; shift 2;;
         --conf) conf="$2"; shift 2;;
+        --username)
+            svn_option="$svn_option --username=$2"
+            svnsync_option="$svnsync_option --source-username=$2"
+            shift 2;;
+        --password)
+            svn_option="$svn_option --password=$2"
+            svnsync_option="$svnsync_option --source-password=$2"
+            shift 2;;
         --) shift; break;;
     esac
 done
@@ -74,12 +86,12 @@ for repo in $@; do
 
     echo "Trying to initialize $repo"
     # Check that $source is there first
-    svn ls $source >/dev/null &&
+    svn ls $svn_option $source >/dev/null &&
         cleanup "$repoDir" &&
         svnadmin create "$repoDir" &&
         rm -rf "$repoDir/hooks" &&
         ln -s $hooks "$repoDir/hooks" &&
         rm -rf "$repoDir/conf" &&
         ln -s $conf "$repoDir/conf" &&
-        svnsync init $mirror $source
+        svnsync init $mirror $source $svnsync_option
 done
