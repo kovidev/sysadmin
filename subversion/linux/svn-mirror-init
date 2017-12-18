@@ -74,6 +74,7 @@ for repo in $@; do
     svn ls $source >/dev/null &&
         cleanup "$repoDir" &&
         svnadmin create "$repoDir" &&
-        cp -R $hooks "$repoDir" &&
+        rm -rf "$repoDir/hooks" &&
+        ln -s $hooks "$repoDir/hooks" &&
         svnsync init $mirror $source
 done
