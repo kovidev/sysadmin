@@ -7,6 +7,7 @@ set -e
 
 progname=$(basename $0)
 hooks="/etc/svn-mirror/hooks"
+conf="/etc/svn-mirror/conf"
 root="./"
 force=0
 
@@ -28,12 +29,13 @@ help() {
     echo "  -r, --root          root directory to create a mirror"
     echo "  -r, --force         never prompt"
     echo "  --hooks             hooks directory (default $hooks)"
+    echo "  --conf              conf directory (default $conf)"
 }
 
 # parse options
 # CAUTION: do not inline $args variable
 # otherwise, program keeps going even `getopt` has been failed.
-args=$(getopt -o hfr: --long help,force,hooks:,root: -n $progname -- $@)
+args=$(getopt -o hfr: --long help,force,hooks:,root:,conf: -n $progname -- $@)
 eval set -- $args
 while true; do
     case "$1" in
@@ -41,6 +43,7 @@ while true; do
         -r|--root) root="$2"; shift 2;;
         -f|--force) force=1; shift;;
         --hooks) hooks="$2"; shift 2;;
+        --conf) conf="$2"; shift 2;;
         --) shift; break;;
     esac
 done
@@ -76,5 +79,7 @@ for repo in $@; do
         svnadmin create "$repoDir" &&
         rm -rf "$repoDir/hooks" &&
         ln -s $hooks "$repoDir/hooks" &&
+        rm -rf "$repoDir/conf" &&
+        ln -s $conf "$repoDir/conf" &&
         svnsync init $mirror $source
 done
