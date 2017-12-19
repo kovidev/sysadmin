@@ -81,7 +81,7 @@ cleanup() {
 
 for repo in $@; do
     mirror="file://$(realpath $root)/$repo"
-    source="svn://dev.kovi.com/$repo"
+    source="svn://60.196.157.171/$repo"
     repoDir=$(canonicalPath "$root/$repo")
 
     echo "Trying to initialize $repo"
