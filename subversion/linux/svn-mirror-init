@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+
+# subversion mirror initializer
+
+# exit immediately if any error occurs
+set -e
+
+progname=$(basename $0)
+hooks="/etc/svn-mirror/hooks"
+conf="/etc/svn-mirror/conf"
+root="./"
+force=0
+svn_option="--non-interactive"
+svnsync_option="--non-interactive"
+
+usage() {
+    echo "Usage: $progname [OPTION]... REPOSITORY..."
+}
+
+canonicalPath() {
+    echo $1 | sed s#//*#/#g
+}
+
+help() {
+    echo "Subversion mirror initializer"
+    echo ""
+    usage
+    echo ""
+    echo "Options:"
+    echo "  -h, --help          display this help and exit"
+    echo "  -r, --root          root directory to create a mirror"
+    echo "  -r, --force         never prompt"
+    echo "  --hooks             hooks directory (default $hooks)"
+    echo "  --conf              conf directory (default $conf)"
+    echo "  --username          connect to the source repository with username ARG"
+    echo "  --password          connect to the source repository with password ARG"
+}
+
+# parse options
+# CAUTION: do not inline $args variable
+# otherwise, program keeps going even `getopt` has been failed.
+args=$(getopt -o hfr: --long help,force,hooks:,root:,conf:,username:,password: -n $progname -- $@)
+eval set -- $args
+while true; do
+    case "$1" in
+        -h|--help) shift; help; exit 0;;
+        -r|--root) root="$2"; shift 2;;
+        -f|--force) force=1; shift;;
+        --hooks) hooks="$2"; shift 2;;
+        --conf) conf="$2"; shift 2;;
+        --username)
+            svn_option="$svn_option --username=$2"
+            svnsync_option="$svnsync_option --source-username=$2"
+            shift 2;;
+        --password)
+            svn_option="$svn_option --password=$2"
+            svnsync_option="$svnsync_option --source-password=$2"
+            shift 2;;
+        --) shift; break;;
+    esac
+done
+
+if [ -z "$*" ]; then
+    usage >&2
+    exit 1
+fi
+
+cleanup() {
+    if [ "$force" -eq 1 ]; then
+        rm -rf "$1"
+    elif [ -e "$1" ]; then
+        read -p "$1 already exists. Delete it? (y/n) " -n 1
+        echo ""
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            rm -rf "$1"
+        else
+            exit 1
+        fi
+    fi
+}
+
+for repo in $@; do
+    mirror="file://$(realpath $root)/$repo"
+    source="svn://60.196.157.171/$repo"
+    repoDir=$(canonicalPath "$root/$repo")
+
+    echo "Trying to initialize $repo"
+    # Check that $source is there first
+    svn ls $svn_option $source >/dev/null &&
+        cleanup "$repoDir" &&
+        svnadmin create "$repoDir" &&
+        rm -rf "$repoDir/hooks" &&
+        ln -s $hooks "$repoDir/hooks" &&
+        rm -rf "$repoDir/conf" &&
+        ln -s $conf "$repoDir/conf" &&
+        svnsync init $mirror $source $svnsync_option
+done
