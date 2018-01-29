@@ -6,9 +6,6 @@ param (
 	[ValidateNotNullorEmpty()]
 	[string]$RepositoryName,
 
-	[ValidateNotNullorEmpty()]
-	[string]$Skeleton = "E:\KoviProjectSystem\subversion\repository-skeleton",
-
 	[switch]$Empty = $false
 )
 
@@ -20,9 +17,8 @@ if (Test-Path $RepositoryPath) {
 
 # Initialize the repository
 svnadmin create --pre-1.5-compatible $RepositoryPath >$null
-if ($Skeleton -ne '') {
-	robocopy /IS /E $Skeleton $RepositoryPath >$null
-}
+Remove-Item -Force -Confirm:$false -Recurse $RepositoryPath\conf
+robocopy /IS /E conf $RepositoryPath\conf >$null
 
 if (!$Empty.IsPresent) {
 	# Construct the standard directory structure and commit.
