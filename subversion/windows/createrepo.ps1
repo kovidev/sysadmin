@@ -16,7 +16,7 @@ if (Test-Path $RepositoryPath) {
 }
 
 # Initialize the repository
-svnadmin create --pre-1.5-compatible $RepositoryPath >$null
+svnadmin create $RepositoryPath >$null
 Remove-Item -Force -Confirm:$false -Recurse $RepositoryPath\conf
 robocopy /IS /E conf $RepositoryPath\conf >$null
 
