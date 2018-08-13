@@ -19,6 +19,7 @@ if (Test-Path $RepositoryPath) {
 svnadmin create $RepositoryPath >$null
 Remove-Item -Force -Confirm:$false -Recurse $RepositoryPath\conf
 robocopy /IS /E conf $RepositoryPath\conf >$null
+robocopy /IS /E hooks $RepositoryPath\hooks >$null
 
 if (!$Empty.IsPresent) {
 	# Construct the standard directory structure and commit.
